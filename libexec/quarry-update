@@ -2,7 +2,7 @@
 set -euC
 
 clone_pyenv() {
-  git clone https://github.com/pyenv/pyenv.git --single-branch --depth=1 --no-checkout
+  git clone https://github.com/pyenv/pyenv.git --single-branch --depth=1 --no-checkout pyenv
   cd pyenv
   git config core.sparsecheckout true
   echo '/plugins/python-build' > .git/info/sparse-checkout
@@ -17,7 +17,7 @@ update_pyenv() {
 cd "$(dirname "$0")/../"
 git pull -q --ff-only
 
-if [ -d 'pyenv' ]; then
+if [ ! -d 'pyenv' ]; then
   clone_pyenv
 fi
 update_pyenv
