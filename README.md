@@ -1,4 +1,4 @@
-# quarry
+# Quarry
 
 Install Python package as a standalone application.
 
@@ -49,3 +49,7 @@ $ quarry uninstall hoge
 ```
 $ quarry update
 ```
+
+# Q&A
+
+## Should I set up Jupyter with Quarry?
