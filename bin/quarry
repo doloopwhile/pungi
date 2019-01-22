@@ -1,0 +1,22 @@
+#!/bin/sh
+set -euC
+
+usage() {
+  echo 'usage: quarry SUBCOMMAND ARGS...'
+}
+
+if [ "$#" -eq 0 ]; then
+  usage >&2 && exit -1
+fi
+
+if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
+  usage && exit
+fi
+
+cmd="$(dirname "$0")/../libexec/quarry-$1"
+if [ ! -e "$cmd" ]; then
+  usage >&2 && exit -1
+fi
+
+shift
+exec "$cmd" "$@"
