@@ -1,3 +1,56 @@
 #!/bin/bash
 set -euC
-echo '0.0.1'
+cd "$(dirname "$0")/../"
+
+PYTHON_BUILD=pyenv/plugins/python-build/bin/python-build
+
+usage() {
+  echo 'usage: quarry install [-v VERSION] [--name NAME] pkg' >&2
+}
+
+latest_python_version() {
+  "$PYTHON_BUILD" --definitions | grep '^[0-9]\+\.[0-9]\+\.[0-9]\+$' | sort -n | tail -1
+}
+
+version_spec=''
+name=''
+python_version="$(latest_python_version)"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    '-h' | '--help')
+      usage && exit
+    ;;
+    '-v' )
+      shift
+      version_spec="==$1"
+    ;;
+    '--name' )
+      shift
+      name="$1"
+      shift
+    ;;
+    '--python' )
+      shift
+      python_version="$1"
+      shift
+    ;;
+    * )
+      break
+    ;;
+  esac
+done
+
+if [ $# -ne 1 ]; then
+  usage >&2
+  exit -1
+fi
+pkg="$1"
+
+echo "Building Python interpreter:"
+"$PYTHON_BUILD" "$python_version" "apps/$name/python"
+
+echo "Installing package:"
+"apps/$name/python/pip" install "$pkg$version_spec"
+
+echo "$pkg" > "apps/$name/info/pkg"
