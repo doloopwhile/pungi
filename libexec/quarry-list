@@ -1,3 +1,5 @@
 #!/bin/bash
 set -euC
-echo '0.0.1'
+cd "$(dirname "$0")/../"
+mkdir -p apps
+find apps -type d -maxdepth 1 -mindepth 1 -exec basename {} \; | sort

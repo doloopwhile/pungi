@@ -11,15 +11,13 @@ clone_pyenv() {
 }
 
 update_pyenv() {
-  pwd
   cd pyenv
-  git pull origin master
-  git read-tree -m -u HEAD
+  git fetch
+  git reset --hard origin/master
 }
 
 cd "$(dirname "$0")/../"
 git pull -q --ff-only
-
 if [ ! -d 'pyenv' ]; then
   clone_pyenv
 fi

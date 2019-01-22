@@ -1,3 +1,25 @@
 #!/bin/bash
 set -euC
-echo '0.0.1'
+cd "$(dirname "$0")/../"
+
+usage() {
+  echo 'usage: quarry exec APPNAME [ARGS...]'
+}
+
+cmdname="$1"
+appname="$1"
+shift
+
+if [ ! -d "apps/$appname" ]; then
+  echo "Package $appname is not installed." >&2
+  echo "Try: quarry install $appname" >&2
+  exit -1
+fi
+
+cmd="apps/$appname/bin/$cmdname"
+if [ ! -f "$cmd" ]; then
+  echo "Command $cmdname is not given by package $appname." >&2
+  exit -1
+fi
+
+exec "$cmd" "$@"
