@@ -3,12 +3,15 @@ set -euC
 
 clone_pyenv() {
   git clone https://github.com/pyenv/pyenv.git --single-branch --depth=1 --no-checkout pyenv
-  cd pyenv
-  git config core.sparsecheckout true
-  echo '/plugins/python-build' > .git/info/sparse-checkout
+  (
+    cd pyenv
+    git config core.sparsecheckout true
+    echo '/plugins/python-build' > .git/info/sparse-checkout
+  )
 }
 
 update_pyenv() {
+  pwd
   cd pyenv
   git pull origin master
   git read-tree -m -u HEAD
