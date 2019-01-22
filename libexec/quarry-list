@@ -1,0 +1,3 @@
+#!/bin/bash
+set -euC
+echo '0.0.1'
