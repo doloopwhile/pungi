@@ -1,3 +1,23 @@
 #!/bin/bash
 set -euC
-echo '0.0.1'
+
+clone_pyenv() {
+  git clone https://github.com/pyenv/pyenv.git --single-branch --depth=1 --no-checkout
+  cd pyenv
+  git config core.sparsecheckout true
+  echo '/plugins/python-build' > .git/info/sparse-checkout
+}
+
+update_pyenv() {
+  cd pyenv
+  git pull origin master
+  git read-tree -m -u HEAD
+}
+
+cd "$(dirname "$0")/../"
+git pull -q --ff-only
+
+if [ -d 'pyenv' ]; then
+  clone_pyenv
+fi
+update_pyenv
