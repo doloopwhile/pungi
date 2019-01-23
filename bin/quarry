@@ -1,5 +1,6 @@
 #!/bin/sh
 set -euC
+cd "$(dirname "$0")"
 
 usage() {
   echo 'usage: quarry SUBCOMMAND ARGS...'
@@ -13,7 +14,11 @@ if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
   usage && exit
 fi
 
-cmd="$(dirname "$0")/../libexec/quarry-$1"
+if [ "$1" = '--version' ]; then
+  exec libexec/subcommands/version
+fi
+
+cmd="libexec/subcommands/$1"
 if [ ! -e "$cmd" ]; then
   usage >&2 && exit -1
 fi
