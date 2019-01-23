@@ -43,10 +43,6 @@ $ quarry info hoge
 ```
 
 ```
-$ quarry uninstall hoge
-```
-
-```
 $ quarry update
 ```
 
