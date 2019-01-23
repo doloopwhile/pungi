@@ -5,7 +5,7 @@ cd "$(dirname "$0")/../"
 PYTHON_BUILD=pyenv/plugins/python-build/bin/python-build
 
 usage() {
-  echo 'usage: quarry install [-v VERSION] [--name NAME] pkg' >&2
+  "$(dirname "$0")/help" install
 }
 
 latest_python_version() {

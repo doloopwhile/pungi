@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euC
 
+usage() {
+  "$(dirname "$0")/help" update
+}
+
 clone_pyenv() {
   git clone https://github.com/pyenv/pyenv.git --single-branch --depth=1 --no-checkout pyenv
   (
