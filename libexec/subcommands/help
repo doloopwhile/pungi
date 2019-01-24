@@ -1,0 +1,28 @@
+#!/bin/bash
+set -euC
+
+usage_all() {
+  "$(dirname "$0")/help" version
+}
+
+case "$1" in
+  install )
+    usage_install
+  ;;
+  exec )
+    usage_install
+  ;;
+  list )
+    usage_install
+  ;;
+  update )
+    usage_install
+  ;;
+  help )
+    usage_help
+  ;;
+  * )
+    usage_all
+  ;;
+esac
+
