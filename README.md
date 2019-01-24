@@ -19,31 +19,31 @@ Requires Bash (Currently, do not support other shell. We need your help!).
 ## Install
 
 ```
-$ git clone https://github.com/doloopwhile/quarry ~/.quarry
-$ ~/.quarry/bin/quarry update
-$ echo 'eval "$(~/.quarry/bin/quarry init -)"' >> ~/.bashrc
+$ git clone https://github.com/doloopwhile/pungi ~/.pungi
+$ ~/.pungi/bin/pungi update
+$ echo 'eval "$(~/.pungi/bin/pungi init -)"' >> ~/.bashrc
 ```
 
 ## Basic Usage
 
 ```
-$ quarry install hoge
+$ pungi install hoge
 ```
 
 ```
-$ quarry exec hoge
+$ pungi exec hoge
 ```
 
 ```
-$ quarry list
+$ pungi list
 ```
 
 ```
-$ quarry info hoge
+$ pungi info hoge
 ```
 
 ```
-$ quarry update
+$ pungi update
 ```
 
 # Q&A

@@ -12,7 +12,7 @@ shift
 
 if [ ! -d "apps/$appname" ]; then
   echo "Package $appname is not installed." >&2
-  echo "Try: quarry install $appname" >&2
+  echo "Try: pungi install $appname" >&2
   exit -1
 fi
 

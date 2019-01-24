@@ -3,7 +3,7 @@ set -euC
 cd "$(dirname "$0")"
 
 usage() {
-  echo 'usage: quarry SUBCOMMAND ARGS...'
+  echo 'usage: pungi SUBCOMMAND ARGS...'
 }
 
 if [ "$#" -eq 0 ]; then
