@@ -2,21 +2,57 @@
 set -euC
 
 usage_all() {
-  "$(dirname "$0")/help" version
+  cat <<EOS
+pungi
+  install
+  exec
+  list
+  update
+  ln
+  help
+EOS
 }
 
-case "$1" in
+usage_exec() {
+  cat <<EOS
+Usage: pungi exec COMMAND [PACKAGE]
+
+Execute COMMAND command which installed with PACKAGE package.
+When PACKAGE is ommited, COMMAND itself is used as package name.
+EOS
+}
+
+usage_list() {
+  :
+}
+
+usage_install() {
+  :
+}
+
+usage_ln() {
+  :
+}
+
+usage_help() {
+  :
+}
+
+case "${1:-}" in
   install )
     usage_install
   ;;
   exec )
-    usage_install
+    usage_exec
   ;;
   list )
-    usage_install
+    usage_list
   ;;
   update )
     usage_install
+  ;;
+  ln )
+    usage_ln
   ;;
   help )
     usage_help

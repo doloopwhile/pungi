@@ -1,0 +1,22 @@
+#!/bin/bash
+set -euC
+cd "$(dirname "$0")/../../"
+
+usage() {
+  "$(dirname "$0")/help" init
+}
+
+if [ "$#" -ne 1 ]; then
+  usage && exit -1
+fi
+
+if [ "$1" != '-' ]; then
+  usage && exit -1
+fi
+
+(
+  paths=(apps/*/bin)
+  IFS=:
+  echo "${paths[*]}"
+)
+
