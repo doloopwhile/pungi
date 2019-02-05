@@ -2,19 +2,22 @@
 set -euC
 cd "$(dirname "$0")/../"
 
-PYTHON_BUILD=pyenv/plugins/python-build/bin/python-build
-
 usage() {
   "$(dirname "$0")/help" install
 }
 
+pyenv_required() {
+  echo 'pyenv command is required.'
+  echo 'For pyenv information, see: https://github.com/pyenv/pyenv'
+}
+
 latest_python_version() {
-  "$PYTHON_BUILD" --definitions | grep '^[0-9]\+\.[0-9]\+\.[0-9]\+$' | sort -n | tail -1
+  pyenv install -l | tr -d ' ' | grep '^[0-9]\+\.[0-9]\+\.[0-9]\+$' | sort -n | tail -1
 }
 
 version_spec=''
 name=''
-python_version="$(latest_python_version)"
+python_version=''
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -47,10 +50,25 @@ if [ $# -ne 1 ]; then
 fi
 pkg="$1"
 
-echo "Building Python interpreter:"
-"$PYTHON_BUILD" "$python_version" "apps/$name/python"
+if ! command -v pyenv > /dev/null; then
+  pyenv_required >&2
+  exit -1
+fi
 
-echo "Installing package:"
-"apps/$name/python/pip" install "$pkg$version_spec"
+if [ -z "$python_version" ]; then
+  python_version="$(latest_python_version)"
+fi
 
+if ! ( pyenv versions --bare | grep "$python_version" > /dev/null ); then
+  pyenv install "$python_version"
+fi
+
+if [ -z "${PYENV_ROOT}" ]; then
+  pyenv_root="${HOME}/.pyenv"
+else
+  pyenv_root="${PYENV_ROOT%/}"
+fi
+
+"$pyenv_root/versions/$python_version/bin/venv" "apps/$name/"
+"apps/$name/bin/pip" install "$pkg$version_spec"
 echo "$pkg" > "apps/$name/info/pkg"
