@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euC
+cd "$(dirname "$0")/../../"
+
+usage() {
+  "$(dirname "$0")/help" ln
+}
+
+appname="$1"
+cmdname="$2"
+
+ln "apps/$appname/python/bin/$cmdname" "apps/$appname/bin/$cmdname"

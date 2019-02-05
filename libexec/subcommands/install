@@ -100,21 +100,21 @@ if [ -e "apps/$name/" ]; then
   fi
 fi
 
+echo "Creating virtual environment(apps/$name/python)..."
 rm -rf "apps/$name/"
 mkdir -p "apps/$name/"
-
-echo "Creating virtual environment(apps/$name/python)..."
 "$pyenv_root/versions/$python_version/bin/python" -m venv "apps/$name/python" > /dev/null
 
-(
-  cd "apps/$name"
+cd "apps/$name"
 
-  echo "Installing package($pkg$version_spec)..."
-  python/bin/pip install "$pkg$version_spec" > /dev/null 2>&1
+interpreter_commands=($(find python/bin -mindepth 1 -exec basename {} \;))
 
-  echo "Creating hardlinks(apps/$name/bin)..."
-  mkdir -p "bin/"
-  cat <<"EOS" | python/bin/python - "$pkg"
+echo "Installing package($pkg$version_spec)..."
+python/bin/pip install "$pkg$version_spec" > /dev/null 2>&1
+
+echo "Creating hardlinks(apps/$name/bin)..."
+mkdir -p "bin/"
+cat <<"EOS" | python/bin/python - "$pkg"
 import sys
 import os
 from os.path import join
@@ -124,6 +124,28 @@ console_scripts = get_entry_map(sys.argv[1]).get('console_scripts')
 if console_scripts:
   for name in console_scripts.keys():
     os.link(join('python', 'bin', name), join('bin', name))
-    print("Created {}".format(join('bin', name)))
+    print("Created", name)
 EOS
-)
+
+for f in $(find python/bin -mindepth 1 -exec basename {} \;); do
+  if [ -e "bin/$f" ]; then
+    continue
+  fi
+
+  ignore=
+  for interpreter_command in "${interpreter_commands[@]}"; do
+    if [ "$f" = "$interpreter_command" ]; then
+      ignore=1
+      break
+    fi
+  done
+
+  if [ -n "$ignore" ]; then
+    continue
+  fi
+
+  echo "'$f' is created while installing package."
+  echo "For creating link, run: pungi ln $name $f"
+  echo
+done
+
