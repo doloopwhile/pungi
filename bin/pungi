@@ -1,6 +1,6 @@
 #!/bin/sh
 set -euC
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/../"
 
 usage() {
   echo 'usage: pungi SUBCOMMAND ARGS...'
@@ -19,7 +19,7 @@ if [ "$1" = '--version' ]; then
 fi
 
 cmd="libexec/subcommands/$1"
-if [ ! -e "$cmd" ]; then
+if ! [ -e "$cmd" ]; then
   usage >&2 && exit -1
 fi
 

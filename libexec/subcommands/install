@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euC
-cd "$(dirname "$0")/../"
+cd "$(dirname "$0")/../../"
 
 usage() {
   "$(dirname "$0")/help" install
@@ -11,6 +11,10 @@ pyenv_required() {
   echo 'For pyenv information, see: https://github.com/pyenv/pyenv'
 }
 
+appdir_exists() {
+  echo -n "apps/$name/ already created. Recreate? [Y/N] "
+}
+
 latest_python_version() {
   pyenv install -l | tr -d ' ' | grep '^[0-9]\+\.[0-9]\+\.[0-9]\+$' | sort -n | tail -1
 }
@@ -18,6 +22,7 @@ latest_python_version() {
 version_spec=''
 name=''
 python_version=''
+recreate=''
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -27,16 +32,21 @@ while [ $# -gt 0 ]; do
     '-v' )
       shift
       version_spec="==$1"
+      shift
     ;;
     '--name' )
       shift
       name="$1"
       shift
     ;;
-    '--python' )
+    '-p' )
       shift
       python_version="$1"
       shift
+    ;;
+    '-f' )
+      shift
+      recreate=1
     ;;
     * )
       break
@@ -59,16 +69,61 @@ if [ -z "$python_version" ]; then
   python_version="$(latest_python_version)"
 fi
 
+if [ -z "$name" ]; then
+  name="$pkg"
+fi
+
 if ! ( pyenv versions --bare | grep "$python_version" > /dev/null ); then
   pyenv install "$python_version"
 fi
 
-if [ -z "${PYENV_ROOT}" ]; then
+if [ -z "${PYENV_ROOT:-}" ]; then
   pyenv_root="${HOME}/.pyenv"
 else
   pyenv_root="${PYENV_ROOT%/}"
 fi
 
-"$pyenv_root/versions/$python_version/bin/venv" "apps/$name/"
-"apps/$name/bin/pip" install "$pkg$version_spec"
-echo "$pkg" > "apps/$name/info/pkg"
+if [ -e "apps/$name/" ]; then
+  if [ -n "$recreate" ]; then
+    :
+  else
+    appdir_exists
+    while read -r line; do
+      line=$(echo "$line" | tr -d ' ')
+      if [ "$line" = Y ]; then
+        break
+      elif [ "$line" = N ]; then
+        exit -1
+      fi
+      appdir_exists
+    done
+  fi
+fi
+
+rm -rf "apps/$name/"
+mkdir -p "apps/$name/"
+
+echo "Creating virtual environment(apps/$name/python)..."
+"$pyenv_root/versions/$python_version/bin/python" -m venv "apps/$name/python" > /dev/null
+
+(
+  cd "apps/$name"
+
+  echo "Installing package($pkg$version_spec)..."
+  python/bin/pip install "$pkg$version_spec" > /dev/null 2>&1
+
+  echo "Creating hardlinks(apps/$name/bin)..."
+  mkdir -p "bin/"
+  cat <<"EOS" | python/bin/python - "$pkg"
+import sys
+import os
+from os.path import join
+from pkg_resources import get_entry_map
+
+console_scripts = get_entry_map(sys.argv[1]).get('console_scripts')
+if console_scripts:
+  for name in console_scripts.keys():
+    os.link(join('python', 'bin', name), join('bin', name))
+    print("Created {}".format(join('bin', name)))
+EOS
+)

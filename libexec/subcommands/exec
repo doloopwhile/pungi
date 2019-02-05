@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euC
-cd "$(dirname "$0")/../"
+cd "$(dirname "$0")/../../"
 
 usage() {
   "$(dirname "$0")/help" exec

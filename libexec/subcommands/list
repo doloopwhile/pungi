@@ -1,10 +1,12 @@
 #!/bin/bash
 set -euC
-cd "$(dirname "$0")/../"
+cd "$(dirname "$0")/../../"
 
 usage() {
   "$(dirname "$0")/help" list
 }
 
 mkdir -p apps
-find apps -type d -maxdepth 1 -mindepth 1 -exec basename {} \; | sort
+for p in apps/*/bin/*; do
+  echo "$p"
+done
